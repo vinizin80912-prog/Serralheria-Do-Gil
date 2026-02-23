@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Serralheria do Gil • App</title>
+
+  <meta name="theme-color" content="#0b0f0c">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    body{margin:0;background:#060a07;color:#e9f2ea;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .c{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}
+    .box{max-width:520px;width:100%;border:1px solid rgba(255,255,255,.08);border-radius:22px;
+      background:rgba(12,18,15,.65);backdrop-filter:blur(12px);padding:22px}
+    .logo{width:84px;height:84px;border-radius:28px;margin:0 auto 12px;display:grid;place-items:center;
+      background:linear-gradient(145deg,#132018,#07100b);border:1px solid rgba(255,255,255,.10);font-size:36px}
+    h1{margin:0;font-size:26px;font-weight:950}
+    p{margin:8px 0 0;color:#96a89b;font-size:13px;line-height:1.35}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+    button,a{border:0;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer}
+    .b{background:#fff;color:#0b0f0c}
+    .g{background:transparent;color:#e9f2ea;border:1px solid rgba(255,255,255,.12);text-decoration:none}
+    .small{margin-top:10px;font-size:12px;color:#7f9286}
+    code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  </style>
+</head>
+
+<body>
+  <div class="c">
+    <div class="box">
+      <div class="logo">🔧</div>
+      <h1>Serralheria do Gil</h1>
+      <p>Modo app (instalável). Se aparecer “Instalar”, instala e pronto.</p>
+
+      <div class="btns">
+        <button class="b" id="installBtn" style="display:none">Instalar App</button>
+        <a class="g" href="./index.html">Abrir agora</a>
+      </div>
+
+      <div class="small">
+        Dica: abre <code>/app.html</code> 1x pra registrar o app.
+      </div>
+    </div>
+  </div>
+
+<script>
+  // registra Service Worker (dá poder de "app")
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" })
+      .catch(()=>{});
+  }
+
+  // botão de instalar (Android/Chrome)
+  let deferredPrompt=null;
+  const btn=document.getElementById("installBtn");
+
+  window.addEventListener("beforeinstallprompt", (e)=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    btn.style.display="inline-block";
+  });
+
+  btn.addEventListener("click", async ()=>{
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice.catch(()=>{});
+    deferredPrompt=null;
+    btn.style.display="none";
+  });
+
+  // opcional: depois de 1s já manda pro index (se você quiser)
+  // setTimeout(()=>location.href="./index.html", 900);
+</script>
+</body>
+</html>
